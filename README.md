@@ -6,7 +6,7 @@ This is an arduino ESP-8266 firmware to control an [OSRailway](https://www.thing
 
 Currently it supports:
 
-- Setting the speed and direction using the topic "/OSRailway/<train_name>/drive" using integers from -1023 to 1023.
+- Setting the speed and direction.
 - Stopping the train using the same topic with the value 0.
 - OverTheAir update capability if configured properly. Updates have to be installed using Platformio.
 - Configurable smooth speed change.
@@ -23,7 +23,7 @@ Currently it supports:
 
 # MQTT Topics
 
-All topics are prefixed by "/OSRailway/<train-name>".
+All topics are prefixed by "/OSRailway/train-name".
 So if you configured a train name like "train1" it would result in "/OSRailway/train1/drive".
 
 - /drive
