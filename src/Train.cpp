@@ -30,19 +30,84 @@ void Train::setup() {
   analogWrite(LED_HDL, 1023);
 }
 
+/**
+ * setSpeed sets the target speed. The train will slowly
+ * accelerate or slow down to the requested speed based
+ * on the set acceleration parameters.
+ */
 void Train::setSpeed(int16_t speed) {
   if (speed < 0) {
-    this->direction = BACKWARD;
+    this->targetDirection = BACKWARD;
   } else {
-    this->direction = FORWARD;
+    this->targetDirection = FORWARD;
   }
 
+  if (this->targetDirection != this->currentDirection) {
+    this->isChangingDirection = true;
+  }
+  this->targetSpeed = abs(speed);
+}
+
+/**
+ * forceSpeed is the same as the setSpeed
+ * but sets immediately the new speed and direction.
+ */
+void Train::forceSpeed(int16_t speed) {
+  if (speed < 0) {
+    this->targetDirection = BACKWARD;
+  } else {
+    this->targetDirection = FORWARD;
+  }
+
+  this->currentDirection = this->targetDirection;
+
   this->currentSpeed = abs(speed);
+  this->targetSpeed = abs(speed);
+}
+
+void Train::setAccelerationSteps(int16_t steps) {
+  this->accelerationSteps = steps;
+}
+
+void Train::setAccelerationTimeSteps(int16_t millis) {
+  this->accelerationTimeSteps = millis;
 }
 
 void Train::loop() {
   analogWrite(motor_PWM, this->currentSpeed);
 
-  digitalWrite(motor_AIN1, this->direction);
-  digitalWrite(motor_AIN2, !this->direction);
+  digitalWrite(motor_AIN1, this->currentDirection);
+  digitalWrite(motor_AIN2, !this->currentDirection);
+
+  uint16_t targetSpeed = this->targetSpeed;
+  if (this->isChangingDirection) {
+    targetSpeed = 0;
+  }
+
+  if (this->currentSpeed == targetSpeed) {
+    if (this->isChangingDirection) {
+      this->isChangingDirection = false;
+      this->currentDirection = this->targetDirection;
+      targetSpeed = this->targetSpeed;
+    } else {
+      return;
+    }
+  }
+
+  unsigned long currentMillis = millis();
+  if (currentMillis - this->previousMillis >= this->accelerationTimeSteps) {
+    this->previousMillis = currentMillis;
+
+    if (targetSpeed < this->currentSpeed) {
+      this->currentSpeed -= this->accelerationSteps;
+      if (this->currentSpeed < targetSpeed) {
+        this->currentSpeed = targetSpeed;
+      }
+    } else {
+      this->currentSpeed += this->accelerationSteps;
+      if (this->currentSpeed > targetSpeed) {
+        this->currentSpeed = targetSpeed;
+      }
+    }
+  }
 }
