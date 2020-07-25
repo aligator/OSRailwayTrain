@@ -10,6 +10,8 @@
 #define TOPIC_DRIVE_FORCE TOPIC "/drive/force"
 #define TOPIC_ACCELERATION_TIME_STEPS TOPIC "/acceleration/timeSteps"
 #define TOPIC_ACCELERATION_SPEED_STEPS TOPIC "/acceleration/speedSteps"
+#define TOPIC_BACKLIGHT TOPIC "/lights/back"
+#define TOPIC_HEADLIGHT TOPIC "/lights/head"
 
 /**
  * converts bytes to a String
@@ -73,6 +75,28 @@ void Mqtt::_receiveCallback(char* topic, byte* payload, unsigned int length) {
       } else {
         Serial.println(
             "the acceleration steps has to be an integer from 0 to 2047");
+      }
+    }
+    return;
+  }
+  if (topicString.equals(TOPIC_BACKLIGHT)) {
+    if (Util::isValidNumber(message)) {
+      int status = message.toInt();
+      if (status >= 0 && status <= 1) {
+        train->setBackLights(status);
+      } else {
+        Serial.println("the lights can be enabled / disabled using 1 or 0");
+      }
+    }
+    return;
+  }
+  if (topicString.equals(TOPIC_HEADLIGHT)) {
+    if (Util::isValidNumber(message)) {
+      int status = message.toInt();
+      if (status >= 0 && status <= 1) {
+        train->setHeadLights(status);
+      } else {
+        Serial.println("the lights can be enabled / disabled using 1 or 0");
       }
     }
     return;

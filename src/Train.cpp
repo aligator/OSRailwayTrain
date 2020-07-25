@@ -73,11 +73,31 @@ void Train::setAccelerationTimeSteps(int16_t millis) {
   this->accelerationTimeSteps = millis;
 }
 
+void Train::setBackLights(bool state) { this->backLights = state; }
+void Train::setHeadLights(bool state) { this->headLights = state; }
+
 void Train::loop() {
   analogWrite(motor_PWM, this->currentSpeed);
 
   digitalWrite(motor_AIN1, this->currentDirection);
   digitalWrite(motor_AIN2, !this->currentDirection);
+
+  if (this->backLights) {
+    digitalWrite(LED_BL2, this->currentDirection);
+    digitalWrite(LED_BL1, !this->currentDirection);
+  } else {
+    digitalWrite(LED_BL2, 0);
+    digitalWrite(LED_BL1, 0);
+  }
+
+  if (this->headLights) {
+    digitalWrite(LED_HB2, this->currentDirection);
+    digitalWrite(LED_HB1, !this->currentDirection);
+
+  } else {
+    digitalWrite(LED_HB2, 0);
+    digitalWrite(LED_HB1, 0);
+  }
 
   uint16_t targetSpeed = this->targetSpeed;
   if (this->isChangingDirection) {

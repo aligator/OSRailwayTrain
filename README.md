@@ -11,6 +11,8 @@ Currently it supports:
 - OverTheAir update capability if configured properly. Updates have to be installed using Platformio.
 - Configurable smooth speed change.
 - Force speed change (e.g. immediate stop)
+- Set backlights. (the red lights)
+- Set Headlights. (the white lights)
 
 # Prequisites
 
@@ -20,6 +22,9 @@ Currently it supports:
 - Rename the config.example.h and adapt it as you need it.
 
 # MQTT Topics
+
+All topics are prefixed by "/OSRailway/<train-name>".
+So if you configured a train name like "train1" it would result in "/OSRailway/train1/drive".
 
 - /drive
   Just pass a value from -1023 to 1023 to drive the train. You can use 0 to stop it. The speed is changed slowly based on the acceleration settings.
@@ -32,11 +37,16 @@ Currently it supports:
 - /acceleration/speedSteps
   This sets the speed steps to increase for every configured time step. Just pass a value from 0 to 2047.
   If you set it for example to 200 it changes the speed by 200 speed-points every configured time step.
+- /lights/back
+  This enables the red back lights. Just pass 1 to enable and 0 to disable the lights.
+  They are always automatically adapted to match the driving direction.
+- /lights/head
+  This enables the white head lights. Just pass 1 to enable and 0 to disable the lights.
+  They are always automatically adapted to match the driving direction.
 
 # Future
 
 I have the following ideas for possible improvements and features:
 
-- Support the LEDs like the official firmware.
 - Create a control-server with web-ui to control several trains at once.
 - Create a raspi-image with the server software and a mosquitto server pre-installed.
