@@ -2,6 +2,13 @@
 
 This is an arduino ESP-8266 firmware to control an [OSRailway](https://www.thingiverse.com/thing:4408535) train using [MQTT](https://en.wikipedia.org/wiki/MQTT). The wiring is the same as described for the official firmware of the [Hectorrail 141 Wifi locomotive](https://www.thingiverse.com/thing:2575667).
 
+Iam currently also building a first version of a web-ui to control several trains with this firmware:
+[OSRailway Control](https://github.com/aligator/OSRailwayControl)
+
+# Disclaimer
+
+This software is in an early stage. The MQTT-api may change.
+
 # Features
 
 Currently it supports:
@@ -11,8 +18,9 @@ Currently it supports:
 - OverTheAir update capability if configured properly. Updates have to be installed using Platformio.
 - Configurable smooth speed change.
 - Force speed change (e.g. immediate stop)
-- Set backlights. (the red lights)
-- Set Headlights. (the white lights)
+- Set back lights. (the red lights)
+- Set head lights. (the white lights)
+- Setting the availability status automatically and unset it as last will.
 
 # Prequisites
 
@@ -43,10 +51,15 @@ So if you configured a train name like "train1" it would result in "/OSRailway/t
 - /lights/head
   This enables the white head lights. Just pass 1 to enable and 0 to disable the lights.
   They are always automatically adapted to match the driving direction.
+- /status
+  If it is set to 1 the train is alive. Else it is disconnected.
+
+# How to install
+
+(To be written...)
 
 # Future
 
 I have the following ideas for possible improvements and features:
 
-- Create a control-server with web-ui to control several trains at once.
-- Create a raspi-image with the server software and a mosquitto server pre-installed.
+- Create a raspi-image with the server software [OSRailway Control](https://github.com/aligator/OSRailwayControl) and a mosquitto server pre-installed.
