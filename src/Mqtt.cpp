@@ -4,14 +4,15 @@
 
 #include "Util.h"
 
-#define TOPIC "/OSRailway/" TRAIN_NAME
-#define TOPIC_ALL TOPIC "/#"
-#define TOPIC_DRIVE TOPIC "/drive"
-#define TOPIC_DRIVE_FORCE TOPIC "/drive/force"
-#define TOPIC_ACCELERATION_TIME_STEPS TOPIC "/acceleration/timeSteps"
-#define TOPIC_ACCELERATION_SPEED_STEPS TOPIC "/acceleration/speedSteps"
-#define TOPIC_BACKLIGHT TOPIC "/lights/back"
-#define TOPIC_HEADLIGHT TOPIC "/lights/head"
+#define TOPIC_TRAIN "/OSRailway/" TRAIN_NAME
+#define TOPIC_STATUS TOPIC_TRAIN "/status"
+#define TOPIC_ALL TOPIC_TRAIN "/#"
+#define TOPIC_DRIVE TOPIC_TRAIN "/drive"
+#define TOPIC_DRIVE_FORCE TOPIC_TRAIN "/drive/force"
+#define TOPIC_ACCELERATION_TIME_STEPS TOPIC_TRAIN "/acceleration/timeSteps"
+#define TOPIC_ACCELERATION_SPEED_STEPS TOPIC_TRAIN "/acceleration/speedSteps"
+#define TOPIC_BACKLIGHT TOPIC_TRAIN "/lights/back"
+#define TOPIC_HEADLIGHT TOPIC_TRAIN "/lights/head"
 
 /**
  * converts bytes to a String
@@ -124,15 +125,21 @@ void Mqtt::_reconnect() {
 
     String clientId = WIFI_HOSTNAME "-";
     clientId += String(random(0xffff), HEX);
-
+    this->client.setKeepAlive(10);
     // Attempt to connect
-    if (!this->client.connect(clientId.c_str(), user, password)) {
+    // For now use "" to indicate the removal of the train
+    // as the last will message.
+    // Later we may also remember inactive trains (and therefore set the status
+    // to "0")
+    if (!this->client.connect(clientId.c_str(), user, password, TOPIC_STATUS, 0,
+                              true, "", true)) {
       Serial.print("failed, rc=");
       Serial.println(client.state());
     } else {
       Serial.println("Connected");
       delay(100);
       this->client.subscribe(TOPIC_ALL);
+      this->client.publish(TOPIC_STATUS, "1", true);
     }
   }
 }
